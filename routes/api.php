@@ -35,6 +35,11 @@ Route::post('comments/{id}', 'CommentsController@update');
 //Reactions Routes
 Route::resource('reactions', 'ReactionsController');
 
+//Search Routes
+Route::get('search/users', 'SearchController@search_users');
+Route::get('search/posts', 'SearchController@search_posts');
+
+
 //React To Post Routes
 Route::resource('react', 'PostReactionsController');
 
