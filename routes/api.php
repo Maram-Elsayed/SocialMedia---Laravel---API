@@ -60,5 +60,7 @@ Route::post('chats/{id}', 'ChatsController@remove_name');
 Route::resource('chat', 'MessagesController');
 Route::post('chat/{id}','MessagesController@send_message');
 
-
+//Chat Participants Routes
+Route::resource('chat/participants', 'ChatParticipantsController');
+Route::post('chat/add_participants/{id}', 'ChatParticipantsController@add_participants');
 
