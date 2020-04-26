@@ -42,13 +42,7 @@ class ChatsController extends Controller
         return response()->json($data);
     }
 
-    public function add_member($userId, $chatId){
-        $member=new Participant;
-        $member->userId=$userId;
-        $member->chatId=$chatId;
-        $member->save();
-    }
-    
+     
     public function index()
     {
         $user=$this->authUser();
@@ -101,24 +95,39 @@ class ChatsController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        //
+        $user=$this->authUser();
+        $this->validate($request, [
+            'name' => 'required',
+        ]);
+
+        $chat=Chat::join('participants','chats.id','=','participants.chatId')
+        ->where([['chats.id',$id],['participants.userId',$user->id]])
+        ->first();
+        if(!$chat){
+            return response()->json('Chat not found',404);
+        }
+        $chat->name= $request->name ;
+        $chat->save();
+        return response()->json($chat,200);    
+
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function remove_name($id){
+        $user=$this->authUser();
+        $chat=Chat::join('participants','chats.id','=','participants.chatId')
+        ->where([['chats.id',$id],['participants.userId',$user->id]])
+        ->first();
+        if(!$chat){
+            return response()->json('Chat not found',404);
+        }
+        $chat->name=null;
+        $chat->save();
+        return response()->json($chat,200);  
+
+    }
+
     public function destroy($id)
     {
         //

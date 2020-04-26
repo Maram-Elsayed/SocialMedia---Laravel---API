@@ -47,21 +47,28 @@ class PostReactionsController extends Controller
         if(!$post){
             return response()->json('Post not found',404);
         }
-        
         $reaction=Reaction::find($request->reaction);
         if(!$reaction){
             return response()->json('Invalid reaction ID',400);
         }
+        $post_reactoin=PostReaction::where([['userId',$user->id],['postId',$post->id]])->first();
+       // return $post_reactoin;
+        if($post_reactoin){
+            if($post_reactoin->reactionId==$reaction->id){
+                $post_reactoin->delete();
+                return response()->json('Reaction deleted');
+            }
+            
+            $post_reactoin->reactionId=$reaction->id;
+            $post_reactoin->save();
+            
+        }
+        else{
         PostReaction::create(['userId'=>$user->id, 'reactionId'=>$reaction->id,'postId'=>$post->id]);
+        }
         return response()->json('reacted successfully');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $user=$this->authUser();
@@ -78,35 +85,19 @@ class PostReactionsController extends Controller
         return $this->view_reactions($post_reactoins);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        //
+        
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        //
+        $reaction=Reaction::find($id)->first();
+        if(!$reaction){
+            return response()->json('Reaction not found',400);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         //

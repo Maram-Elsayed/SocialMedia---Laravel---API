@@ -51,8 +51,10 @@ Route::post('friendrequests/{id}','FriendRequestsController@accept_decline_reque
 Route::resource('friends', 'FriendsController');
 Route::get('friends/user/{id}','FriendsController@viewUserFriends');
 
-//Messages Routes
+//Chat Routes
 Route::resource('chats', 'ChatsController');
+Route::post('chats/{id}', 'ChatsController@remove_name');
+
 
 //Messages Routes
 Route::resource('chat', 'MessagesController');
