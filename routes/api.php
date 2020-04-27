@@ -22,6 +22,8 @@ Route::group([
 //User Routes
 Route::resource('users', 'UsersController');
 Route::post('register', 'UsersController@register');
+Route::post('users/profile-picture/remove', 'UsersController@remove_profile_picure');
+Route::post('users', 'UsersController@update');
 
 //Post Routes
 Route::post('posts/{id}', 'PostsController@update');

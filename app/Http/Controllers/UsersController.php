@@ -26,6 +26,8 @@ class UsersController extends Controller
             'name' => 'required',
             'email' => 'required',
             'password' => 'required',
+            'gender'=>'required',
+            'birthday'=>'nullable|date|date_format:d/m/Y',
             'profile_picture' => 'image|nullable|max:1999'
         ]);
        
@@ -50,6 +52,8 @@ class UsersController extends Controller
 
         $user->name = $request->input('name');
         $user->email= $request->input('email');
+        $user->gender= $request->input('gender');
+        $user->gender= $request->input('birthday');
         $user->password= bcrypt($request->input('password'));
         $user->profile_picture = $fileNameToStore;
         $user->save();
@@ -76,19 +80,10 @@ class UsersController extends Controller
         //
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         $user=$this->authUser();
-        
-        if($user->id!=$id){
-            return response()->json("Unauthorized",401);
-        }
-        $this->validate($request, [
-            'name' => 'required',
-            'profile_picture' => 'image|nullable|max:1999'
-        ]);
-       
-        if($request->hasFile('profile_picture')){
+        if($request->hasFile('profile_picture')){   
             // Get filename with the extension
             $filenameWithExt = $request->file('profile_picture')->getClientOriginalName();
             // Get just filename
@@ -101,7 +96,7 @@ class UsersController extends Controller
             $path = $request->file('profile_picture')->storeAs('public/profile_pictures', $fileNameToStore);
            
             Storage::delete('public/profile_picture/'.$user->profile_picture);
-            $user->profile_picture=$fileNameToStore;
+            $user->profile_picture='http://localhost:8080/socialmedia-api/storage/app/public/profile_pictures/'.$fileNameToStore;
         } 
         if($request->input('name')){
             $user->name=$request->input('name');
@@ -113,6 +108,14 @@ class UsersController extends Controller
       return response()->json($user,200);
        
 
+    }
+
+    public function remove_profile_picure(){
+        $user=$this->authUser();
+        Storage::delete('public/profile_picture/'.$user->profile_picture);
+        $user->profile_picture=null;
+        $user->save();
+        return response()->json($user,200);
     }
 
     public function destroy($id)
