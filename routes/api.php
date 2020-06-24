@@ -24,6 +24,7 @@ Route::resource('users', 'UsersController');
 Route::post('register', 'UsersController@register');
 Route::post('users/profile-picture/remove', 'UsersController@remove_profile_picure');
 Route::post('users', 'UsersController@update');
+Route::post('users/profile-picture', 'UsersController@update_profile_picture');
 
 //Post Routes
 Route::post('posts/{id}', 'PostsController@update');
@@ -65,4 +66,8 @@ Route::post('chat/{id}','MessagesController@send_message');
 //Chat Participants Routes
 Route::resource('chat/participants', 'ChatParticipantsController');
 Route::post('chat/add_participants/{id}', 'ChatParticipantsController@add_participants');
+
+//Post Notification Routes
+Route::resource('notifications', 'PostsNotificationsController');
+Route::post('notifications/count_new','PostsNotificationsController@new_notifications_count');
 

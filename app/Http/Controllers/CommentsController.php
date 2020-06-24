@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Post;
 use App\Comment;
+use App\PostNotification;
 use App\User;
 use DB;
 
@@ -22,14 +24,30 @@ class CommentsController extends Controller
         //
     }
 
-    public function create()
+    public function send_notification($postId,$userId)
     {
-        //
+        $post=Post::where('id', $postId)->first();
+        $userCommented=User::select('name')->where('id',$userId)->first();
+        if($userId != $post->user_id)  {
+            if(Str::contains($post->description,'profile picture')){
+                $message=$userCommented->name.' commented on your profile picture';
+            }
+            else{
+            $message=$userCommented->name.' commented on your post';
+            }
+            $postnotification=PostNotification::create(['message'=>$message, 'is_read'=>0, 'is_seen'=>0, 'userId'=>$post->user_id, 'postId'=>$postId]);
+        }
+        
+        
     }
 
     public function store(Request $request)
     {
         $user=$this->authUser();
+        $post=Post::where('id', $request->post)->get();
+        if($post->count()<1){
+            return response()->json("Post not found");
+        }
         $this->validate($request, [
             'comment' => 'nullable',
             'image' => 'image|nullable|max:1999'
@@ -50,8 +68,9 @@ class CommentsController extends Controller
         } else {
             $fileNameToStore = null;
         }
-
+   
         Comment::create(['comment'=>$request->comment,'userId'=>$user->id,'image'=>$fileNameToStore,'postId'=>$request->post]);
+        $this->send_notification($request->post,$user->id);
         return response()->json(['message'=>'Comment added successfully',
                                  'view_post'=> 'http://localhost:8080/socialmedia-api/public/api/posts/'.$request->post]);
 

@@ -13,7 +13,7 @@ class Post extends Model
     public $timestamps = true;
 
     protected $fillable = [
-        'caption', 'cover_image'
+        'caption', 'cover_image', 'description'
     ];
 
     public function user(){
@@ -26,5 +26,9 @@ class Post extends Model
 
     public function reactions(){
         return $this->hasMany('App\PostReaction');
+    }
+
+    public function postsNotifications(){
+        return $this->hasMany('App\postNotification');
     }
 }
